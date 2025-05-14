@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Project</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="/dashboard">Construction AI</a>
+        <a href="/dashboard" class="btn btn-outline-light">Back to Dashboard</a>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4>Edit Activity: {{ project.activity }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Activity Details -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Activity Name</label>
+                            <input type="text" name="activity" class="form-control" 
+                                   value="{{ project.activity }}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Activity Type</label>
+                            <select name="activity_type" class="form-control" required>
+                                <option value="Foundation" {% if project.activity_type == 'Foundation' %}selected{% endif %}>Foundation</option>
+                                <option value="Walls" {% if project.activity_type == 'Walls' %}selected{% endif %}>Walls</option>
+                                <option value="Slab" {% if project.activity_type == 'Slab' %}selected{% endif %}>Slab</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Duration Fields -->
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>Planned Duration (Days)</label>
+                            <input type="number" name="planned_duration" class="form-control"
+                                   value="{{ project.planned_duration }}" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Actual Duration (Days)</label>
+                            <input type="number" name="actual_duration" class="form-control"
+                                   value="{{ project.actual_duration }}" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Float Days</label>
+                            <input type="number" name="float_days" class="form-control"
+                                   value="{{ project.float_days }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Predicted Start Date</label>
+                            <input type="date" name="predicted_start" class="form-control"
+                                   value="{{ project.predicted_start.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Predicted Finish Date</label>
+                            <input type="date" name="predicted_finish" class="form-control"
+                                   value="{{ project.predicted_finish.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Resource Information -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Primary Resource</label>
+                            <input type="text" name="primary_resource" class="form-control"
+                                   value="{{ project.primary_resource }}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Labor Units</label>
+                            <input type="number" name="labor_units" class="form-control"
+                                   value="{{ project.labor_units }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-primary mr-2">Update Activity</button>
+                        <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom of admin_dashboard.html -->
+    </div>  <!-- Closing container div -->
+
+    <!-- Scripts must be here -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
+</body>
+</html>

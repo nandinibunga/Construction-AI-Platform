@@ -1,0 +1,89 @@
+/* Base Styles */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+/* Progress Bars */
+.progress {
+    height: 20px;
+    border-radius: 20px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    transition: width 0.5s ease;
+}
+
+/* Timeline Visualization */
+.timeline-bar {
+    height: 25px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+}
+
+.planned-bar {
+    background: #4e73df;
+    color: white;
+    padding: 5px;
+    transition: width 0.3s ease;
+}
+
+.actual-bar {
+    background: #e74a3b;
+    color: white;
+    padding: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Risk Stats */
+.risk-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Table Styling */
+.table-hover tbody tr:hover {
+    transform: translateX(5px);
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}

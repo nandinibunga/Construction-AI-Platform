@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Login' if mode == 'login' else 'Register' }} - Construction AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .construction-bg {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1605106702734-205df224ecce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .btn-construction {
+            background: #224abe;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .btn-construction:hover {
+            background: #1a3698;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="construction-bg">
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-md-6 col-lg-4">
+                <div class="login-card p-4">
+                    <div class="text-center mb-4">
+                        <img src="construction-logo.png" alt="Logo" width="80" class="mb-3">
+                        <h3 class="mb-3">Construction AI Platform</h3>
+                        <p class="text-muted">Manage projects with predictive analytics</p>
+                    </div>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert alert-danger">
+                                {{ messages[0] }}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="site.manager@company.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" 
+                                   name="password" placeholder="••••••••" required>
+                        </div>
+                        
+                        {% if mode == 'register' %}
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-construction w-100 mb-3">
+                            {{ 'Login' if mode == 'login' else 'Create Account' }}
+                        </button>
+
+                        <div class="text-center">
+                            {% if mode == 'login' %}
+                                <p class="text-muted">New to Construction AI? 
+                                    <a href="{{ url_for('register') }}" class="text-decoration-none">
+                                        Create Account
+                                    </a>
+                                </p>
+                            {% else %}
+                                <p class="text-muted">Already have an account? 
+                                    <a href="{{ url_for('login') }}" class="text-decoration-none">
+                                        Login
+                                    </a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

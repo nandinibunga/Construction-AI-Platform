@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Construction Intelligence</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <span class="navbar-brand">Construction Intelligence Platform</span>
+        <div>
+            <span class="text-light mr-3">{{ current_user.name }} (Core User)</span>
+            <a href="/logout" class="btn btn-sm btn-outline-light">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <!-- Search and Filters -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search activities...">
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="row">
+            <!-- Left Column - Activity Details -->
+            <div class="col-md-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Activity Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Activity</th>
+                                    <th>Type</th>
+                                    <th>Float</th>
+                                    <th>Resource</th>
+                                    <th>Delay Prob</th>
+                                    <th>Planned</th>
+                                    <th>Actual</th>
+                                    <th>Predicted</th>
+                                    <th>Start</th>
+                                    <th>Finish</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in projects %}
+                                <tr class="{% if p.delay_probability > 50 %}table-danger{% elif p.delay_probability > 30 %}table-warning{% endif %}">
+                                    <td>{{ p.activity }}</td>
+                                    <td>{{ p.activity_type }}</td>
+                                    <td>{{ p.float_days }}D</td>
+                                    <td>{{ p.primary_resource }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar 
+                                                {% if p.delay_probability > 50 %}bg-danger
+                                                {% elif p.delay_probability > 30 %}bg-warning
+                                                {% else %}bg-success{% endif %}" 
+                                                style="width: {{ p.delay_probability }}%">
+                                                {{ p.delay_probability|round(1) }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ p.planned_duration }}D</td>
+                                    <td>{{ p.actual_duration }}D</td>
+                                    <td class="font-weight-bold">{{ p.predicted_duration }}D</td>
+                                    <td>{{ p.predicted_start.strftime('%d-%b') }}</td>
+                                    <td>{{ p.predicted_finish.strftime('%d-%b') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Schedule Network & Risk Factors -->
+            <div class="col-md-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5>Schedule Network</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="schedule-timeline">
+                            {% for p in projects %}
+                            <div class="timeline-item mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>{{ p.activity }}</small>
+                                    <small class="text-muted">{{ p.predicted_duration }}D</small>
+                                </div>
+                                <div class="timeline-bar">
+                                    <div class="planned-bar" style="width: {{ p.planned_duration * 5 }}px">
+                                        {{ p.planned_duration }}D
+                                    </div>
+                                    <div class="actual-bar" style="width: {{ (p.actual_duration - p.planned_duration) * 5 }}px">
+                                        +{{ p.actual_duration - p.planned_duration }}D
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Factors Card -->
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-white">
+                        <h5>Project Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="riskChart" style="height: 300px;"></div>
+                        <div class="risk-stats">
+                            <div class="stat-item">
+                                <span class="stat-value text-danger">{{ projects|length }}</span>
+                                <span class="stat-label">Total Activities</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">{{ projects|sum(attribute='labor_units') }}</span>
+                                <span class="stat-label">Labor Units</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

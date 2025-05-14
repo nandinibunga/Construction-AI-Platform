@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Activity</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="/dashboard">Construction Intelligence</a>
+        <div>
+            <a href="/dashboard" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4>Create New Activity</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/add_project">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Activity Name</label>
+                            <input type="text" class="form-control" name="activity" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Activity Type</label>
+                            <select class="form-control" name="activity_type" required>
+                                <option value="Foundation">Foundation</option>
+                                <option value="Walls">Walls</option>
+                                <option value="Slab">Slab</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>Planned Duration (Days)</label>
+                            <input type="number" class="form-control" name="planned_duration" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Actual Duration (Days)</label>
+                            <input type="number" class="form-control" name="actual_duration" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Float Days</label>
+                            <input type="number" class="form-control" name="float_days" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control" name="predicted_start" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Finish Date</label>
+                            <input type="date" class="form-control" name="predicted_finish" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Primary Resource</label>
+                            <input type="text" class="form-control" name="primary_resource" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Labor Units</label>
+                            <input type="number" class="form-control" name="labor_units" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Activity</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
