@@ -1,20 +1,18 @@
 <!-- templates/admin_dashboard.html -->
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Construction Intelligence</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Optional FontAwesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- FontAwesome -->
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <span class="navbar-brand">Construction Intelligence Platform</span>
         <div>
-            <!-- ✅ Updated "Add New Activity" Button -->
-            <a href="/add_project" class="btn btn-success btn-sm mr-2">
-                ➕ Add New Activity
-            </a>
+            <a href="/add_project" class="btn btn-success btn-sm mr-2">➕ Add New Activity</a>
             <span class="text-light mr-3">{{ current_user.name }}</span>
             <a href="/logout" class="btn btn-sm btn-outline-light">Logout</a>
         </div>
@@ -64,23 +62,12 @@
                                 {% for p in projects %}
                                 <tr class="{% if p.delay_probability > 50 %}table-danger{% elif p.delay_probability > 30 %}table-warning{% endif %}">
                                     <td>{{ p.activity }}</td>
-                                    <td>
-                                        {{ p.activity_type }}
-                                        {% if current_user.role == 'admin' %}
-                                        <!-- Action icons for Edit and Delete -->
-                                        <a href="/edit_project/{{ p.id }}" class="btn btn-sm btn-warning" style="margin-left: 10px;">
-                                            <i class="fas fa-pencil-alt" style="color: blue;" title="Edit"></i>
-                                        </a>
-                                        <a href="/delete_project/{{ p.id }}" class="btn btn-sm btn-danger" style="margin-left: 10px;">
-                                            <i class="fas fa-trash" style="color: red;" title="Delete"></i>
-                                        </a>
-                                        {% endif %}
-                                    </td>
+                                    <td>{{ p.activity_type }}</td>
                                     <td>{{ p.float_days }}D</td>
                                     <td>{{ p.primary_resource }}</td>
                                     <td>
                                         <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar 
+                                            <div class="progress-bar
                                                 {% if p.delay_probability > 50 %}bg-danger
                                                 {% elif p.delay_probability > 30 %}bg-warning
                                                 {% else %}bg-success{% endif %}" 
@@ -95,13 +82,12 @@
                                     <td>{{ p.predicted_start.strftime('%d-%b') }}</td>
                                     <td>{{ p.predicted_finish.strftime('%d-%b') }}</td>
                                     <td>
-                                        <!-- Action icons for Edit and Delete -->
                                         {% if current_user.role == 'admin' %}
-                                        <a href="/edit_project/{{ p.id }}" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-pencil-alt" style="color: blue;" title="Edit"></i>
+                                        <a href="/edit_project/{{ p.id }}" class="btn btn-sm btn-warning" title="Edit">
+                                            <i class="fas fa-pencil-alt" style="color: blue;"></i>
                                         </a>
-                                        <a href="/delete_project/{{ p.id }}" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-trash" style="color: red;" title="Delete"></i>
+                                        <a href="/delete_project/{{ p.id }}" class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="fas fa-trash" style="color: red;"></i>
                                         </a>
                                         {% endif %}
                                     </td>
@@ -183,4 +169,6 @@
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>
+
+
 

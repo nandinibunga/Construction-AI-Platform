@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -28,6 +28,7 @@ except Exception as e:
     model = None
 
 # ----------------------- Models -----------------------
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +55,7 @@ class Project(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 # ----------------------- Authentication -----------------------
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -73,12 +75,10 @@ def create_admin_user():
 
 # ----------------------- Routes -----------------------
 
-# Home Route - redirects to login
 @app.route('/')
 def home():
     return redirect(url_for('login'))
 
-# Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -96,7 +96,6 @@ def login():
 
     return render_template('login_register.html', mode='login')
 
-# Registration Route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -108,14 +107,12 @@ def register():
             flash('Email already registered', 'warning')
             return redirect(url_for('register'))
 
-        # Role is set to 'core' by default for new users
         new_user = User(
             name=name,
             email=email,
             password=generate_password_hash(password, method='pbkdf2:sha256'),
-            role='core'  # Automatically assign 'core' role
+            role='core'  # Default role
         )
-
         db.session.add(new_user)
         db.session.commit()
         flash('Registration successful! Please login', 'success')
@@ -123,16 +120,14 @@ def register():
 
     return render_template('login_register.html', mode='register')
 
-# Dashboard Route
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    projects = Project.query.all()
     if current_user.role == 'core':
-        projects = Project.query.all()
-        return render_template('core_dashboard.html', projects=projects)  # Core users see the dashboard
+        return render_template('core_dashboard.html', projects=projects)
     else:
-        projects = Project.query.all()
-        return render_template('admin_dashboard.html', projects=projects)  # Admin sees full dashboard
+        return render_template('admin_dashboard.html', projects=projects)
 
 @app.route('/logout')
 @login_required
@@ -141,9 +136,7 @@ def logout():
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
 
-# ----------------------- Project Management -----------------------
-
-# Admin can add projects
+# Add Project (Admin only)
 @app.route('/add_project', methods=['GET', 'POST'])
 @login_required
 def add_project():
@@ -155,7 +148,6 @@ def add_project():
         return render_template('add_project.html')
 
     try:
-        # Capture form data
         new_project = Project(
             activity=request.form.get('activity'),
             activity_type=request.form.get('activity_type'),
@@ -171,35 +163,91 @@ def add_project():
             admin_id=current_user.id
         )
 
-        # Predict Delay Probability using the model
         if model:
             input_data = pd.DataFrame([[new_project.planned_duration, new_project.actual_duration]],
                                       columns=['planned_duration', 'actual_duration'])
             new_project.delay_probability = model.predict(input_data)[0]
-
-            # Use the model to predict the duration based on delay probability
             delay_factor = (new_project.delay_probability / 100) + 1
             new_project.predicted_duration = round(new_project.planned_duration * delay_factor)
 
-        # Commit the new project to the database
         db.session.add(new_project)
         db.session.commit()
         flash('Project added successfully', 'success')
-    except ValueError as e:
-        db.session.rollback()
-        flash(f'Invalid input format: {str(e)}', 'danger')
     except Exception as e:
         db.session.rollback()
         flash(f'Error adding project: {str(e)}', 'danger')
 
     return redirect(url_for('dashboard'))
 
+# Edit Project (Admin only)
+@app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_project(id):
+    if current_user.role != 'admin':
+        flash('Permission denied', 'danger')
+        return redirect(url_for('dashboard'))
+
+    project = Project.query.get_or_404(id)
+
+    if request.method == 'GET':
+        return render_template('edit_project.html', project=project)
+
+    try:
+        project.activity = request.form.get('activity')
+        project.activity_type = request.form.get('activity_type')
+        project.float_days = int(request.form.get('float_days', 0))
+        project.primary_resource = request.form.get('primary_resource')
+        project.planned_duration = int(request.form.get('planned_duration'))
+        project.actual_duration = int(request.form.get('actual_duration'))
+        project.predicted_duration = int(request.form.get('predicted_duration', 0))
+        project.predicted_start = datetime.strptime(request.form.get('predicted_start'), '%Y-%m-%d')
+        project.predicted_finish = datetime.strptime(request.form.get('predicted_finish'), '%Y-%m-%d')
+        project.planned_expense = float(request.form.get('planned_expense', 0))
+        project.labor_units = int(request.form.get('labor_units', 0))
+
+        if model:
+            input_data = pd.DataFrame([[project.planned_duration, project.actual_duration]],
+                                      columns=['planned_duration', 'actual_duration'])
+            project.delay_probability = model.predict(input_data)[0]
+            delay_factor = (project.delay_probability / 100) + 1
+            project.predicted_duration = round(project.planned_duration * delay_factor)
+
+        db.session.commit()
+        flash('Project updated successfully', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error updating project: {str(e)}', 'danger')
+
+    return redirect(url_for('dashboard'))
+
+# Delete Project (Admin only)
+@app.route('/delete_project/<int:id>', methods=['POST'])
+@login_required
+def delete_project(id):
+    if current_user.role != 'admin':
+        flash('Permission denied', 'danger')
+        return redirect(url_for('dashboard'))
+
+    project = Project.query.get_or_404(id)
+    try:
+        db.session.delete(project)
+        db.session.commit()
+        flash('Project deleted successfully', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting project: {str(e)}', 'danger')
+
+    return redirect(url_for('dashboard'))
+
 # ----------------------- Initialization -----------------------
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        create_admin_user()  # Create the admin user on startup
+        create_admin_user()
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+
 
 
 
